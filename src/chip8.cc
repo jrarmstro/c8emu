@@ -259,15 +259,13 @@ void Chip8::step() {
     }
 
     if (r_st_ > 0) {
-        if (r_st_ == 1) {
-            #ifdef WINDOWS
-            Beep(440, 1000);
-            #elif LINUX
-            std::system("echo -e \"\007\" >/dev/tty10");
-            #else
-            std::cout << "\a" << std::flush;
-            #endif
-        }
+        #ifdef WINDOWS
+        Beep(440, 1000);
+        #elif LINUX
+        std::system("echo -e \"\007\" >/dev/tty10");
+        #else
+        std::cout << "\a" << std::flush;
+        #endif
         --r_st_;
     }
 }
