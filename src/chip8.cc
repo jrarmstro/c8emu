@@ -231,7 +231,7 @@ void Chip8::step() {
                     r_i_ += r_[x];
                     break;
                 case 0x0029u: // FX29; set I to location of sprite for char in VX
-                    r_i_ = x * 5u;
+                    r_i_ = r_[x] * 5u;
                     break;
                 case 0x0033u: // FX33; store decimal rep of VX in I, I+1, I+2
                     mem_[r_i_] = r_[x] / 100;
@@ -240,9 +240,11 @@ void Chip8::step() {
                     break;
                 case 0x0055u: // FX55; store [V0,VX] in mem starting at I
                     for (auto i = 0u; i <= x; ++i) mem_[r_i_ + i] = r_[i];
+                    r_i_ += x + 1;
                     break;
                 case 0x0065u: // FX65; fill [V0,VX] from mem starting at I
                     for (auto i = 0u; i <= x; ++i) r_[i] = mem_[r_i_ + i];
+                    r_i_ += x + 1;
                     break;
                 default:
                     std::ostringstream ss;
