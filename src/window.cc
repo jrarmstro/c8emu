@@ -42,6 +42,10 @@ Window::~Window()
     delete ui;
 }
 
+void Window::resizeEvent(QResizeEvent *) {
+    c8.need_redraw_ = true;
+}
+
 void Window::keyPressEvent(QKeyEvent *event) {
     switch(event->key()) {
         case Qt::Key_1:
