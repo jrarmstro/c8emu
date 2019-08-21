@@ -5,16 +5,20 @@
 #include <sstream>
 #include <stack>
 #include <stdexcept>
+#include "window.h"
 
 
-struct UnknownOpcodeError : public std::exception {
+class UnknownOpcodeError : public std::exception {
+
     uint16_t opcode_;
+
+public:
 
     explicit UnknownOpcodeError(uint16_t opcode)
             : std::exception{}, opcode_{opcode} {}
 
     [[nodiscard]] char const* what() const noexcept override {
-        char* err = (char*) malloc(80);
+        char* err = static_cast<char*>(malloc(80));
         sprintf(err, "Unknown opcode: %04X", opcode_);
         return err;
     }
@@ -32,8 +36,9 @@ public:
 
     void set_key(int key, bool val);
 
-    bool gfx_[64 * 32];
-    bool need_redraw_;
+    [[nodiscard]] bool need_redraw() const;
+
+    friend void Window::drawChip8(Chip8* c8);
 
     friend std::ostream& operator<<(std::ostream& out, Chip8& c8);
 
@@ -55,6 +60,9 @@ private:
     uint8_t mem_[4096];
 
     std::stack<uint16_t> stack_;
+
+    bool gfx_[64 * 32];
+    bool need_redraw_;
 
     bool key_[16];
 

@@ -29,14 +29,14 @@ static constexpr uint8_t FONT_[80] = {
 
 
 Chip8::Chip8()
-        : gfx_          {false},
-          need_redraw_  {true},
-          r_pc_         {0x200u},
+        : r_pc_         {0x200u},
           r_i_          {0},
           r_dt_         {0},
           r_st_         {0},
           r_            {0},
           mem_          {0},
+          gfx_          {false},
+          need_redraw_  {true},
           key_          {false},
           random_device_{},
           rng_          {random_device_()},
@@ -52,12 +52,11 @@ bool Chip8::load_application(const char* filename) {
     FILE* fp = fopen(filename, "rb");
     if (fp == nullptr) return false;
 
-
     fseek(fp, 0, SEEK_END);
-    size_t flen = (size_t) ftell(fp);
+    auto flen = static_cast<size_t>(ftell(fp));
     rewind(fp);
 
-    char* buf = (char*) malloc(sizeof(char) * flen);
+    char* buf = static_cast<char*>(malloc(sizeof(char) * flen));
     if (buf == nullptr) return false;
 
     size_t result = fread(buf, 1, flen, fp);
@@ -66,7 +65,7 @@ bool Chip8::load_application(const char* filename) {
     if (0x1000 - 0x200 <= flen) return false;
 
     for (auto i = 0uL; i < flen; ++i) {
-        mem_[i + 0x200] = (uint8_t) buf[i];
+        mem_[i + 0x200] = static_cast<uint8_t>(buf[i]);
     }
 
     fclose(fp);
@@ -76,7 +75,7 @@ bool Chip8::load_application(const char* filename) {
 
 void Chip8::step() {
     // Fetch the opcode from memory;
-    uint16_t op = (mem_[r_pc_] << 8u);
+    uint16_t op = static_cast<uint16_t>(mem_[r_pc_] << 8u);
              op |= mem_[r_pc_ + 1];
 
 //    std::cout << "Op: " << std::hex << op << std::endl;
@@ -99,7 +98,8 @@ void Chip8::step() {
                 stack_.pop();
             } else {
                 // TODO: Call RCA 1802 at op & 0x0FFFu
-                throw UnknownOpcodeError{op};
+                //throw UnknownOpcodeError{op};
+                break;
             }
             break;
         case 0x1000u: // 1NNN; jump to address NNN
@@ -205,7 +205,7 @@ void Chip8::step() {
         case 0xF000u:
             switch (op & 0x00FFu) {
                 case 0x0007u: // FX07; set VX to value of DT
-                    r_[x] = (uint8_t) r_dt_;
+                    r_[x] = static_cast<uint8_t>(r_dt_);
                     break;
                 case 0x000Au: { // FX0A; await keypress, store in VX
                     bool press = false;
@@ -276,13 +276,17 @@ void Chip8::set_key(int key, bool val) {
     key_[key] = val;
 }
 
+bool Chip8::need_redraw() const {
+    return need_redraw_;
+}
+
 
 std::ostream &operator<<(std::ostream &out, Chip8 &c8) {
     for (int i = 0; i < c8.NUM_REGISTERS; ++i) {
         if (i % 4 == 0) out << std::endl;
-        out << 'V' << i << ": " << std::setfill('0') << std::setw(5) << (unsigned int) c8.r_[i] << ", ";
+        out << 'V' << i << ": " << std::setfill('0') << std::setw(5) << static_cast<unsigned int>(c8.r_[i]) << ", ";
     }
     out << std::endl;
-    out << "PC: " << c8.r_pc_ << ", I: " << c8.r_i_ << ", DT:" << c8.r_dt_ << ", ST: " << c8.r_st_;
+    out << "PC: " << c8.r_pc_ << ", I: " << c8.r_i_ << ", DT: " << c8.r_dt_; //<< ", ST: " << c8.r_st_;
     return out << std::endl;
 }

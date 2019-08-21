@@ -1,38 +1,44 @@
 #ifndef WINDOW_H
 #define WINDOW_H
+#include <map>
 #include <QGraphicsScene>
 #include <QMainWindow>
-#include "chip8.h"
 
 
 namespace Ui {
-class Window;
+    class Window;
 }
+
+class Chip8;
+
 
 class Window : public QMainWindow {
     Q_OBJECT
 public:
 
-    Window(QWidget *parent, const char* app);
+    Window(QWidget* parent, const char* app);
 
-    ~Window();
+    ~Window() override;
+
+    void load_rom(const char* filename);
+
+    void drawChip8(Chip8* c8);
 
 protected:
 
-    void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
-    void keyPressEvent(QKeyEvent *event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
-    void keyReleaseEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
 
     Ui::Window *ui;
 
-    QGraphicsScene *scene;
-    QPixmap image;
-
-    Chip8 c8;
+    Chip8* c8;
+    QImage c8gfx;
+    std::map<int, int> keymap;
 
 };
 

@@ -4,7 +4,10 @@
 int main(int argc, char* argv[]) {
     QApplication app{argc, argv};
 
-    Window window{nullptr, argv[1]};
+    const char* appname = nullptr;
+    if (argc > 1) appname = argv[1];
+
+    Window window{nullptr, appname};
     window.setWindowTitle("c8emu");
     window.show();
 
