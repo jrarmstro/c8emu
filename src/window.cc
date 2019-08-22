@@ -37,7 +37,7 @@ Window::Window(QWidget* parent, const char* app)
 
     keymap.emplace(Qt::Key_Z, 0xA);
     keymap.emplace(Qt::Key_X, 0x0);
-    keymap.emplace(Qt::Key_C, 0xD);
+    keymap.emplace(Qt::Key_C, 0xB);
     keymap.emplace(Qt::Key_V, 0xF);
 
     connect(ui->actionOpen_ROM, &QAction::triggered, this, &Window::open);
