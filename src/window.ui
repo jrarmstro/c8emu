@@ -54,7 +54,22 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen_ROM"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
+  <action name="actionOpen_ROM">
+   <property name="text">
+    <string>Open ROM</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

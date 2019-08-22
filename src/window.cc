@@ -1,4 +1,5 @@
 #include "window.h"
+#include <QFileDialog>
 #include <QKeyEvent>
 #include <QTimer>
 #include "chip8.h"
@@ -9,6 +10,7 @@ Window::Window(QWidget* parent, const char* app)
         : QMainWindow{parent},
           ui{new Ui::Window},
           c8{nullptr},
+          c8loop{nullptr},
           c8gfx{64, 32, QImage::Format_Mono}
 {
     ui->setupUi(this);
@@ -38,6 +40,8 @@ Window::Window(QWidget* parent, const char* app)
     keymap.emplace(Qt::Key_C, 0xD);
     keymap.emplace(Qt::Key_V, 0xF);
 
+    connect(ui->actionOpen_ROM, &QAction::triggered, this, &Window::open);
+
     if (app) load_rom(app);
 }
 
@@ -50,14 +54,16 @@ void Window::load_rom(const char* filename) {
     c8 = new Chip8{};
     if (!c8->load_application(filename)) exit(1);
 
-    auto timer = new QTimer(parent());
-    connect(timer, &QTimer::timeout, this, [this]{
+    if (c8loop) disconnect(c8loop, &QTimer::timeout, nullptr, nullptr);
+    delete c8loop;
+    c8loop = new QTimer(parent());
+    connect(c8loop, &QTimer::timeout, this, [this]{
         c8->step();
         if (c8->need_redraw()) {
             drawChip8(c8);
         }
     });
-    timer->start(1);
+    c8loop->start(1);
 }
 
 void Window::drawChip8(Chip8* c8) {
@@ -80,6 +86,11 @@ void Window::drawChip8(Chip8* c8) {
     delete oldscene;
 
     c8->need_redraw_ = false;
+}
+
+void Window::open() {
+    QString filename = QFileDialog::getOpenFileName(this, "Select CHIP-8 ROM file");
+    load_rom(QFile::encodeName(filename));
 }
 
 void Window::resizeEvent(QResizeEvent*) {

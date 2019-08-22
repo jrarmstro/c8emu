@@ -49,6 +49,8 @@ Chip8::Chip8()
 }
 
 bool Chip8::load_application(const char* filename) {
+    std::cout << "Opening " << filename << std::endl;
+
     FILE* fp = fopen(filename, "rb");
     if (fp == nullptr) return false;
 

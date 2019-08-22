@@ -24,6 +24,10 @@ public:
 
     void drawChip8(Chip8* c8);
 
+private slots:
+
+    void open();
+
 protected:
 
     void resizeEvent(QResizeEvent* event) override;
@@ -37,6 +41,8 @@ private:
     Ui::Window *ui;
 
     Chip8* c8;
+    QTimer* c8loop;
+
     QImage c8gfx;
     std::map<int, int> keymap;
 
